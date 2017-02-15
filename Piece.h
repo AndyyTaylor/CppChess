@@ -16,6 +16,7 @@ public:
     void LoadMovementVector(std::vector<Piece> pieces);
     void AddVector(int start, int end, int inc, bool flip, bool diag, std::vector<Piece> pieces);
     bool CanMoveTo(int _x, int _y, std::vector<Piece> pieces, bool eqlcol);
+    bool IsPieceAt(int _x, int _y, std::vector<Piece> pieces);
     std::string GetColor(){ return col; }
     void Render(SDL_Renderer* renderer);
     void Select(){ selected = true; }
@@ -30,6 +31,7 @@ private:
     std::string col;
     std::string type;
     bool selected;
+    bool moved;
     SDL_Rect rect;
     SDL_Texture* texture;
 };

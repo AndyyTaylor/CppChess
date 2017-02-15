@@ -79,19 +79,32 @@ void Render()
 }
 void SetupBoard()
 {
-    std::string piecePos[] = {"rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"};
+    std::string piecePos[] = {"pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"};
     for (int j = 0; j < 2; j++)
     {
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 16; i++)
         {
             Piece p;
             std::string col = "white";
-            int y = 1;
-            if (j > 0){ 
-                col = "black"; 
-                y = 8;
+            int y;
+            int x;
+            if (piecePos[i] != "pawn")
+            {
+                x = i-7;
+                y = 1;
+                if (j > 0){ 
+                    col = "black"; 
+                    y = 8;
+                }
+            } else {
+                x = i+1;
+                y = 2;
+                if (j > 0){ 
+                    col = "black"; 
+                    y = 7;
+                }
             }
-            p.Init(i+1, y, SQUARE_SIZE, renderer, piecePos[i], col, pieces);
+            p.Init(x, y, SQUARE_SIZE, renderer, piecePos[i], col, pieces);
             pieces.push_back(p); 
         } 
     }

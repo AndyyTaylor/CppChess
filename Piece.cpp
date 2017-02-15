@@ -11,6 +11,7 @@ Piece::Piece()
     , y(0)
     , selected(false)
     , col("white") 
+    , moved(false)
 {
     
 }
@@ -20,6 +21,7 @@ void Piece::Init(int _x, int _y, int _w, SDL_Renderer* renderer, std::string _ty
     type = _type;
     SetPos(_x, _y, _w, pieces);
     LoadTexture(renderer, type);
+    moved = false;
 }
 void Piece::Render(SDL_Renderer* renderer)
 {
@@ -92,6 +94,24 @@ void Piece::LoadMovementVector(std::vector<Piece> pieces)
         AddVector(1, 8, 1, true, false, pieces);
         AddVector(-1, -8, -1, false, false, pieces);
         AddVector(-1, -8, -1, true, false, pieces);
+    } else if (type == "pawn"){
+        std::string cols = "wb";
+        int found = 1-cols.find(col.at(0)); 
+        if (!IsPieceAt(x, y+2*(found*2-1), pieces) && !moved)
+        {
+            move_vector.push_back(0); 
+            move_vector.push_back(2*(found*2-1));
+        } if (!IsPieceAt(x, y+found*2-1, pieces))
+        {
+            move_vector.push_back(0); 
+            move_vector.push_back(found*2-1);
+        } if (!CanMoveTo(x-1, y+found*2-1, pieces, false)){
+            move_vector.push_back(-1);
+            move_vector.push_back(found*2-1);
+        } if (!CanMoveTo(x+1, y+found*2-1, pieces, false)){
+            move_vector.push_back(1);
+            move_vector.push_back(found*2-1);
+        }
     }
 }
 void Piece::AddVector(int start, int end, int inc, bool flip, bool diag, std::vector<Piece> pieces)
@@ -133,6 +153,18 @@ bool Piece::CanMoveTo(int _x, int _y, std::vector<Piece> pieces, bool eqlcol)
     }
     return true;
 }
+bool Piece::IsPieceAt(int _x, int _y, std::vector<Piece> pieces)
+{
+    for (int i = 0; i < pieces.size(); i++)
+    {
+        Piece& p = pieces[i];
+        if (p.GetX() == x && p.GetY() == y) continue;
+        if (p.GetX() == _x && p.GetY() == _y){
+            return true;
+        }
+    }
+    return false;
+}
 void Piece::LoadTexture(SDL_Renderer* renderer, std::string type)
 {
     std::string source = "res/";
@@ -147,6 +179,8 @@ void Piece::LoadTexture(SDL_Renderer* renderer, std::string type)
         source += "n.png";
     } else if (type == "queen"){
         source += "q.png";
+    } else if (type == "pawn"){
+        source += "p.png";
     }
     texture = IMG_LoadTexture(renderer, source.c_str());
 }
@@ -170,4 +204,5 @@ void Piece::SetPos(int _x, int _y, int _w, std::vector<Piece>& pieces)
     rect.y = w*(8-_y); 
     rect.w = w; 
     rect.h = w; 
+    moved = true;
 }
